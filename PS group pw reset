@@ -1,0 +1,14 @@
+# Reset password for all of group g1 in lab
+$groupName = g1
+
+# Get the users within the specified group and set the "Change password at next logon" flag
+$groupMembers = Get-ADGroupMember -Identity $groupName | Where-Object { $_.objectClass -eq 'user' }
+
+foreach ($member in $groupMembers) {
+    $user = Get-ADUser -Identity $member.SamAccountName
+    $user | Set-ADUser -ChangePasswordAtLogon $true
+
+    Write-Host "Password change required at next login for user: $($user.SamAccountName)"
+}
+
+Write-Host "Password change requirement has been set for all users in the group."
