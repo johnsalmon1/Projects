@@ -1,0 +1,11 @@
+#!/bin/bash
+#Update script for apt package managers
+
+if [ -d /etc/apt ]
+then
+  sudo apt update
+  sudo apt dist-upgrade
+else
+  echo "This script does not support your distribution."
+  echo "Please contact your Systems Administrator for assistance."
+fi
