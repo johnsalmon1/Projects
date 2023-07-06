@@ -1,0 +1,20 @@
+# OU for test network will be _USERS and the domain is johndomain
+$ouDN = "OU=_USERS,DC=johndomain,DC=com"
+
+# Load the .NET assembly for AccountManagement
+Add-Type -AssemblyName System.DirectoryServices.AccountManagement
+
+# Create a PrincipalContext object for the current domain
+$domainContext = New-Object System.DirectoryServices.AccountManagement.PrincipalContext([System.DirectoryServices.AccountManagement.ContextType]::Domain)
+
+# Get the users within the specified OU and force password reset at next login
+$ouUsers = [System.DirectoryServices.AccountManagement.UserPrincipal]::FindAll($domainContext, "Enabled -eq 'True' -and ObjectClass -eq 'user' -and DistinguishedName -like '*$ouDN'")
+
+foreach ($user in $ouUsers) {
+    $user.ExpirePasswordNow()
+    $user.Save()
+
+    Write-Host "Password reset forced at next login for user: $($user.SamAccountName)"
+}
+
+Write-Host "Password reset has been forced at next login for all users in the OU."
